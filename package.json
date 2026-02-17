@@ -1,0 +1,18 @@
+{
+  "name": "msa-bootstrap-repo",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "npm@11.8.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run -ws build --if-present",
+    "test": "npm run -ws test --if-present",
+    "lint": "npm run -ws lint --if-present",
+    "doctor:npm-runtime": "node scripts/doctor_npm_runtime.mjs",
+    "check:workspace-protocol": "node scripts/check_workspace_protocol.mjs",
+    "guard:repo-invariants": "node scripts/doctor_npm_runtime.mjs && node scripts/check_workspace_protocol.mjs"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "@repo/users-svc",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "tsx src/index.ts",
+    "start:migrate": "prisma migrate deploy && npm run start",
+    "test": "vitest run",
+    "lint": "echo users-svc lint placeholder",
+    "prisma:generate": "prisma generate"
+  },
+  "dependencies": {
+    "@repo/shared": "workspace:*",
+    "@prisma/client": "^6.11.0",
+    "fastify": "^4.29.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "prisma": "^6.11.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.2.0"
+  }
+}

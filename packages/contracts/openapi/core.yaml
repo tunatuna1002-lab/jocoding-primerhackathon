@@ -1,0 +1,29 @@
+openapi: 3.0.3
+info:
+  title: core-svc API
+  version: 0.0.0
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: ok
+  /claims:
+    post:
+      summary: Create claim + evidence + provenance atomically
+      responses:
+        "201":
+          description: created
+  /variants:
+    post:
+      summary: Create variant
+      responses:
+        "201":
+          description: created
+  /export-versions:
+    post:
+      summary: Create export version
+      responses:
+        "201":
+          description: created

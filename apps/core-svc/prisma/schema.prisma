@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ClaimStatus {
+  candidate
+  verified
+  rejected
+}
+
+enum ConfidenceLevel {
+  low
+  medium
+  high
+}
+
+enum VariantTarget {
+  draft
+  section
+  bullet
+}
+
+model Claim {
+  id          String            @id @default(cuid())
+  inputId     String
+  confidence  ConfidenceLevel
+  status      ClaimStatus
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  evidences   Evidence[]
+  provenances Provenance[]
+  variantLinks VariantClaim[]
+}
+
+model Evidence {
+  id        String   @id @default(cuid())
+  claimId   String
+  source    String
+  content   String
+  createdAt DateTime @default(now())
+
+  claim Claim @relation(fields: [claimId], references: [id], onDelete: Cascade)
+}
+
+model Provenance {
+  id        String   @id @default(cuid())
+  claimId   String
+  actorType String
+  actorId   String
+  action    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  claim Claim @relation(fields: [claimId], references: [id], onDelete: Cascade)
+}
+
+model Draft {
+  id        String   @id @default(cuid())
+  title     String
+  createdAt DateTime @default(now())
+  sections  Section[]
+}
+
+model Section {
+  id        String   @id @default(cuid())
+  draftId   String
+  title     String
+  index     Int
+  createdAt DateTime @default(now())
+  bullets   Bullet[]
+
+  draft Draft @relation(fields: [draftId], references: [id], onDelete: Cascade)
+}
+
+model Bullet {
+  id        String   @id @default(cuid())
+  sectionId String
+  text      String
+  index     Int
+  createdAt DateTime @default(now())
+
+  section Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+}
+
+model Variant {
+  id         String   @id @default(cuid())
+  target     VariantTarget
+  createdAt  DateTime @default(now())
+  claimLinks VariantClaim[]
+  exportLinks ExportVersionVariant[]
+}
+
+model VariantClaim {
+  variantId String
+  claimId   String
+  sortOrder Int
+
+  variant Variant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  claim   Claim   @relation(fields: [claimId], references: [id], onDelete: Cascade)
+
+  @@id([variantId, claimId])
+}
+
+model ExportVersion {
+  id         String   @id @default(cuid())
+  status     String
+  createdAt  DateTime @default(now())
+  variantLinks ExportVersionVariant[]
+}
+
+model ExportVersionVariant {
+  exportVersionId String
+  variantId       String
+
+  exportVersion ExportVersion @relation(fields: [exportVersionId], references: [id], onDelete: Cascade)
+  variant       Variant       @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@id([exportVersionId, variantId])
+}

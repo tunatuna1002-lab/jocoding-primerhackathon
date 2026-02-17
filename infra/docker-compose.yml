@@ -1,0 +1,85 @@
+services:
+  users-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: users_user
+      POSTGRES_PASSWORD: users_pass
+      POSTGRES_DB: users_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U users_user -d users_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  inputs-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: inputs_user
+      POSTGRES_PASSWORD: inputs_pass
+      POSTGRES_DB: inputs_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U inputs_user -d inputs_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  core-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: core_user
+      POSTGRES_PASSWORD: core_pass
+      POSTGRES_DB: core_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U core_user -d core_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  users-svc:
+    build:
+      context: .
+      dockerfile: apps/users-svc/Dockerfile
+    command: sh -c "npm run -w @repo/users-svc start:migrate"
+    environment:
+      PORT: 3001
+      NODE_ENV: development
+      LOG_LEVEL: info
+      DATABASE_URL: postgresql://users_user:users_pass@users-db:5432/users_db
+    depends_on:
+      users-db:
+        condition: service_healthy
+    ports:
+      - "3001:3001"
+
+  inputs-svc:
+    build:
+      context: .
+      dockerfile: apps/inputs-svc/Dockerfile
+    command: sh -c "npm run -w @repo/inputs-svc start:migrate"
+    environment:
+      PORT: 3002
+      NODE_ENV: development
+      LOG_LEVEL: info
+      DATABASE_URL: postgresql://inputs_user:inputs_pass@inputs-db:5432/inputs_db
+    depends_on:
+      inputs-db:
+        condition: service_healthy
+    ports:
+      - "3002:3002"
+
+  core-svc:
+    build:
+      context: .
+      dockerfile: apps/core-svc/Dockerfile
+    command: sh -c "npm run -w @repo/core-svc start:migrate"
+    environment:
+      PORT: 3003
+      NODE_ENV: development
+      LOG_LEVEL: info
+      DATABASE_URL: postgresql://core_user:core_pass@core-db:5432/core_db
+    depends_on:
+      core-db:
+        condition: service_healthy
+    ports:
+      - "3003:3003"
+

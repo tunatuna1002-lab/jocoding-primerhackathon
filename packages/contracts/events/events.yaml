@@ -1,0 +1,25 @@
+events:
+  - name: ClaimCreated
+    required:
+      - id
+      - claimId
+    fields:
+      - actor
+      - timestamp
+  - name: EvidenceAdded
+    required:
+      - id
+      - claimId
+      - evidenceId
+  - name: ProvenanceRecorded
+    required:
+      - id
+      - claimId
+  - name: VariantCreated
+    required:
+      - id
+      - variantId
+  - name: ExportVersionCreated
+    required:
+      - id
+      - exportVersionId
