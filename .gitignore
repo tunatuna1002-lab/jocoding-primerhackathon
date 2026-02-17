@@ -6,8 +6,8 @@ logs
 .env
 dist
 build
+.omx/
 
 # Prisma
 prisma/**/dev.db
 prisma/**/node_modules
-
